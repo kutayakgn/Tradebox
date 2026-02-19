@@ -1,5 +1,6 @@
 using CMS.DocumentEngine;
 using Tradebox.Extensions;
+using Tradebox.Models.PageTypes;
 
 namespace Tradebox.Services;
 
@@ -30,15 +31,15 @@ public class BreadcrumbService : IBreadcrumbService
             if (pathSegments.Count == 0)
                 return Task.FromResult(breadcrumbs);
 
-            // Tek sorguda tüm ancestor + current page'i çek
-            var pages = DocumentHelper.GetDocuments()
+            // Tek sorguda tüm ancestor + current page'i çek (typed: Tradebox.Page)
+            var pages = DocumentHelper.GetDocuments<Page>()
                 .WhereIn("NodeAliasPath", pathSegments.ToArray())
                 .Culture(culture)
                 .CombineWithDefaultCulture()
                 .Published()
                 .LatestVersion(false)
                 .OnCurrentSite()
-                .Columns("NodeID", "NodeAliasPath", "NodeLevel", "DocumentName")
+                .Columns("NodeID", "NodeAliasPath", "NodeLevel", "PageName")
                 .OrderBy("NodeLevel")
                 .ToList();
 
@@ -55,7 +56,7 @@ public class BreadcrumbService : IBreadcrumbService
 
                 breadcrumbs.Add(new BreadcrumbItem
                 {
-                    Title = page.DocumentName,
+                    Title = page.PageName,
                     Url = "/" + url.TrimStart('/'),
                     IsActive = isActive
                 });
