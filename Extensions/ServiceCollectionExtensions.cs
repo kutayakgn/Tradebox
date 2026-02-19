@@ -22,6 +22,10 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IRedirectService, RedirectService>();
         services.AddScoped<IBreadcrumbService, BreadcrumbService>();
 
+        // Localization
+        services.AddHttpContextAccessor();
+        services.AddScoped<IKenticoLocalizationService, KenticoLocalizationService>();
+
         return services;
     }
 }
