@@ -1,5 +1,4 @@
 using CMS.Helpers;
-using CMS.Localization;
 
 namespace Tradebox.Services;
 
@@ -80,7 +79,8 @@ public class KenticoLocalizationService : IKenticoLocalizationService
 
         try
         {
-            return LocalizationHelper.LocalizeString(text, culture);
+            // LocalizeString(inputText, culture, encode, useDefaultCulture)
+            return ResHelper.LocalizeString(text, culture, encode: false, useDefaultCulture: true);
         }
         catch (Exception ex)
         {
