@@ -1,0 +1,38 @@
+@model Tradebox.Models.PageTypes.Slide
+@{
+    var children = ViewBag.Children as List<Tradebox.Models.ViewModels.ComponentTreeNode>;
+}
+
+<div class="slide-item @Model.CssClass">
+    @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+    {
+        <div class="slide-image">
+            <img src="@Model.ImageUrl" alt="@Model.Title" loading="lazy" />
+        </div>
+    }
+
+    <div class="slide-content">
+        @if (!string.IsNullOrWhiteSpace(Model.Title))
+        {
+            <h3 class="slide-title">@Model.Title</h3>
+        }
+        @if (!string.IsNullOrWhiteSpace(Model.Description))
+        {
+            <p class="slide-description">@Model.Description</p>
+        }
+        @if (!string.IsNullOrWhiteSpace(Model.LinkText))
+        {
+            <a href="@Model.LinkUrl" class="slide-link">@Model.LinkText</a>
+        }
+    </div>
+
+    @if (children != null && children.Any())
+    {
+        <div class="slide-children">
+            @foreach (var child in children)
+            {
+                @await Html.PartialAsync("_ComponentTreeNode", child)
+            }
+        </div>
+    }
+</div>

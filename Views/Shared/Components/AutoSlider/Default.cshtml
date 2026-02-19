@@ -1,0 +1,41 @@
+@model Tradebox.Models.PageTypes.AutoSlider
+@{
+    var children = ViewBag.Children as List<Tradebox.Models.ViewModels.ComponentTreeNode>;
+    var sliderId = $"slider-{Model.NodeID}";
+
+    // Slides folder'ini bul (CMS.Folder tipinde) ve icindeki slide'lari al
+    var slidesFolder = children?.FirstOrDefault(c => c.Component.ClassName == "CMS.Folder");
+    var slides = slidesFolder?.Children ?? new List<Tradebox.Models.ViewModels.ComponentTreeNode>();
+
+    // Folder disindaki child'lar (Currencies vb.)
+    var otherChildren = children?.Where(c => c.Component.ClassName != "CMS.Folder").ToList()
+        ?? new List<Tradebox.Models.ViewModels.ComponentTreeNode>();
+}
+
+<div class="auto-slider @Model.CssClass"
+     id="@sliderId"
+     data-interval="@Model.Interval"
+     data-autoplay="@Model.AutoPlay.ToString().ToLower()">
+
+    @if (!string.IsNullOrWhiteSpace(Model.Title))
+    {
+        <h2 class="slider-title">@Model.Title</h2>
+    }
+
+    @* Slides *@
+    @if (slides.Any())
+    {
+        <div class="slider-track">
+            @foreach (var slide in slides)
+            {
+                @await Html.PartialAsync("_ComponentTreeNode", slide)
+            }
+        </div>
+    }
+
+    @* Currencies ve diger child component'ler *@
+    @foreach (var child in otherChildren)
+    {
+        @await Html.PartialAsync("_ComponentTreeNode", child)
+    }
+</div>

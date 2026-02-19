@@ -1,0 +1,275 @@
+@model Tradebox.Models.PageTypes.Header
+@{
+    var children = ViewBag.Children as List<Tradebox.Models.ViewModels.ComponentTreeNode>;
+
+    // Routes klasoru altindaki HeaderRouteItem'lar
+    var routesFolder = children?.FirstOrDefault(c =>
+        c.Component.ClassName == "CMS.Folder"
+        && c.Component.DocumentName.Equals("Routes", StringComparison.OrdinalIgnoreCase));
+    var routes = routesFolder?.Children ?? new List<Tradebox.Models.ViewModels.ComponentTreeNode>();
+
+    // Languages klasoru altindaki HeaderLanguageItem'lar
+    var languagesFolder = children?.FirstOrDefault(c =>
+        c.Component.ClassName == "CMS.Folder"
+        && c.Component.DocumentName.Equals("Languages", StringComparison.OrdinalIgnoreCase));
+    var languages = languagesFolder?.Children ?? new List<Tradebox.Models.ViewModels.ComponentTreeNode>();
+
+    // ApplyModal klasoru altindaki HeaderApplyChapter'lar
+    var applyModalFolder = children?.FirstOrDefault(c =>
+        c.Component.ClassName == "CMS.Folder"
+        && c.Component.DocumentName.Equals("ApplyModal", StringComparison.OrdinalIgnoreCase));
+    var chapters = applyModalFolder?.Children ?? new List<Tradebox.Models.ViewModels.ComponentTreeNode>();
+}
+
+<header class="d-flex justify-content-center">
+	<nav class="header-nav d-none d-xl-flex">
+		<a class="navbar-brand" href="@Model.BrandHref"><img src="@Model.BrandImageUrl" /></a>
+		<div class="header-nav__routes">
+
+			@for (var routeIndex = 0; routeIndex < routes.Count; routeIndex++)
+			{
+				var routeNode = routes[routeIndex];
+				var route = (Tradebox.Models.PageTypes.HeaderRouteItem)routeNode.Component;
+				var routeChilds = routeNode.Children;
+
+				if (!routeChilds.Any())
+				{
+					<a class="header-nav__route" rel="noopener noreferrer" target="_self" href="@route.Href">@route.Text</a>
+				}
+
+				if (routeChilds.Any())
+				{
+					var modalId = $"route-modal-{routeIndex}";
+					<div class="header-nav__route-item">
+						<div class="header-nav__route js-route-toggle" data-modal-id="@modalId">
+							@route.Text <img class="rotate-90" src="/assets/icons/angle-right-blue.svg" />
+						</div>
+						<div id="@modalId" class="header-nav__route-modal hidden">
+							<ul class="header-nav__route-list">
+								@foreach (var childNode in routeChilds)
+								{
+									var child = (Tradebox.Models.PageTypes.HeaderRouteItem)childNode.Component;
+									<li>
+										<a class="header-nav__route-link" href="@child.Href">@child.Text</a>
+										@if (childNode != routeChilds.Last())
+										{
+											<hr />
+										}
+									</li>
+								}
+							</ul>
+						</div>
+					</div>
+				}
+			}
+		</div>
+		<div class="header-nav__apply">
+			@foreach (var langNode in languages)
+			{
+				var lang = (Tradebox.Models.PageTypes.HeaderLanguageItem)langNode.Component;
+				<a href="@lang.Href" class="header-nav__language">
+					<img src="@lang.ImageUrl">
+				</a>
+			}
+			<div class="header-apply__wrapper">
+				<a href="#" id="headerApplyButton" class="header-apply__button">
+				<a href="#" id="headerApplyButton" class="header-apply__button">
+					<img src="@Model.ApplyButtonIconUrl">
+					@Model.ApplyButtonText
+					<img class="rotate-90" src="~/assets/icons/angle-right-blue.svg" />
+				</a>
+				<!-- Modal Box -->
+				<div id="headerApplyModal" class="header-apply__modal hidden">
+					<div class="header-apply__modal-arrow"></div>
+					<div class="header-apply__modal-content">
+						@for (var index = 0; index < chapters.Count; index++)
+						{
+							var chapterNode = chapters[index];
+							var chapter = (Tradebox.Models.PageTypes.HeaderApplyChapter)chapterNode.Component;
+							var buttons = chapterNode.Children;
+
+							<div class="header-apply__chapter">
+								<p>@chapter.Paragraph</p>
+								@foreach (var btnNode in buttons)
+								{
+									var button = (Tradebox.Models.PageTypes.HeaderApplyButton)btnNode.Component;
+									<a class="header-apply__modal-button" target="_blank" href="@button.Href">
+										@button.Text <img src="@Model.ModalButtonIconUrl" />
+									</a>
+								}
+							</div>
+
+							if (index < chapters.Count - 1)
+							{
+								<hr>
+							}
+						}
+					</div>
+				</div>
+			</div>
+		</div>
+	</nav>
+	<nav class="mobile-col">
+		<div class="navbar-mobile-wrapper">
+			@if (!Context.Request.Path.Equals("/"))
+			{
+				<img id="menuIconBack" class="icon rotate-270" src="~/assets/icons/angle-right-blue.svg"
+					 onclick="history.back()" />
+				<div style="width: 48px;"></div>
+			}
+
+			@if (Context.Request.Path.Equals("/"))
+			{
+				<div style="width: 32px;"></div>
+			}
+
+			<div class="d-flex w-100 justify-content-center">
+				<a class="w-fc" href="@Model.BrandHref">
+					<img style="max-height:48px;" class="logo-mobile" src="@Model.BrandImageUrl" />
+				</a>
+			</div>
+
+			<img id="menuIconHamburger" class="icon" src="~/assets/icons/hamburger-menu.svg" onclick="toggleMobileMenu()" />
+		</div>
+	</nav>
+	<div id="mobileMenu" class="mobile-menu-overlay">
+		<div class="icon-wrapper">
+			<img id="menuIconClose" class="icon" src="~/assets/icons/x-mark.svg"
+				 onclick="toggleMobileMenu()" />
+		</div>
+		<div class="side-menu">
+			<ul>
+				@foreach (var routeNode in routes)
+				{
+					var item = (Tradebox.Models.PageTypes.HeaderRouteItem)routeNode.Component;
+					var itemChilds = routeNode.Children;
+
+					@if (itemChilds.Any())
+					{
+						<li>
+							<div class="collapsible">
+								<a href="@item.Href">@item.Text</a>
+								<button onclick="toggleSubMenu(this)" class="dropdown-btn">
+									<img class="rotate-90" src="~/assets/icons/angle-right-white.svg" alt="" />
+								</button>
+							</div>
+							<ul class="sub-menu">
+								<div class="li-div">
+									@foreach (var childNode in itemChilds)
+									{
+										var child = (Tradebox.Models.PageTypes.HeaderRouteItem)childNode.Component;
+										var grandChilds = childNode.Children;
+
+										@if (grandChilds.Any())
+										{
+											<li>
+												<div class="collapsible sub-collapsible">
+													<a href="@child.Href">@child.Text</a>
+													<button onclick="toggleSubMenu(this)" class="dropdown-btn">
+														<img class="rotate-90" src="~/assets/icons/angle-right-white.svg" alt="" />
+													</button>
+												</div>
+												<ul class="sub-menu grand-sub-menu">
+													<div class="li-div">
+														@foreach (var grandChildNode in grandChilds)
+														{
+															var grandChild = (Tradebox.Models.PageTypes.HeaderRouteItem)grandChildNode.Component;
+															<li>
+																<a href="@grandChild.Href">
+																	<span>@grandChild.Text</span>
+																</a>
+															</li>
+														}
+													</div>
+												</ul>
+											</li>
+										}
+										else
+										{
+											<li>
+												<a href="@child.Href">
+													<span>@child.Text</span>
+												</a>
+											</li>
+										}
+									}
+								</div>
+							</ul>
+						</li>
+					}
+					else
+					{
+						<li>
+							<a href="@item.Href">
+								<span>@item.Text</span>
+							</a>
+						</li>
+					}
+				}
+			</ul>
+		</div>
+		<div class="language-row">
+			<div class="language-wrapper">
+				@foreach (var langNode in languages)
+				{
+					var lang = (Tradebox.Models.PageTypes.HeaderLanguageItem)langNode.Component;
+					<a href="@lang.Href" class="lang-text"
+					   style="@(Context.Request.Path.ToString().ToLower().Contains(lang.Code.ToLower()) || (lang.Code.Equals("tr", StringComparison.OrdinalIgnoreCase) && !Context.Request.Path.ToString().ToLower().Contains("en-us")) ? "color:#003971;" : "color:#BDBDBD;")">
+						@lang.Text
+					</a>
+				}
+			</div>
+		</div>
+	</div>
+</header>
+
+<script>
+	const hesapAcButton = document.getElementById('headerApplyButton');
+	const headerModal = document.getElementById('headerApplyModal');
+
+	hesapAcButton.addEventListener('click', (e) => {
+		e.preventDefault();
+		headerModal.classList.toggle('hidden');
+	});
+
+	document.addEventListener('click', (e) => {
+		if (!headerModal.contains(e.target) && !hesapAcButton.contains(e.target)) {
+			headerModal.classList.add('hidden');
+		}
+	});
+
+	const routeToggles = document.querySelectorAll(".js-route-toggle");
+	routeToggles.forEach((toggle) => {
+		toggle.addEventListener("click", (e) => {
+			const modalId = toggle.getAttribute("data-modal-id");
+			const routeModal = document.getElementById(modalId);
+			const isHidden = routeModal.classList.contains("hidden");
+			document.querySelectorAll(".header-nav__route-modal").forEach((m) => m.classList.add("hidden"));
+			if (isHidden) {
+				routeModal.classList.remove("hidden");
+			}
+		});
+	});
+
+	document.addEventListener("click", (e) => {
+		if (!e.target.closest(".js-route-toggle") && !e.target.closest(".header-nav__route-modal")) {
+			document.querySelectorAll(".header-nav__route-modal").forEach((m) => m.classList.add("hidden"));
+		}
+	});
+
+	function toggleSubMenu(button) {
+		button.parentElement.classList.toggle("open");
+		button.parentElement.nextElementSibling.classList.toggle("show");
+		button.classList.toggle("rotate");
+	}
+
+	function toggleMobileMenu() {
+		const menu = document.getElementById("mobileMenu");
+		const isOpen = menu.classList.contains("active");
+		if (isOpen) {
+			menu.classList.remove("active");
+		} else {
+			menu.classList.add("active");
+		}
+	}
+</script>

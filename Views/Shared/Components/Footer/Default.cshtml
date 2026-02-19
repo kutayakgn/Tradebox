@@ -1,0 +1,65 @@
+@model Tradebox.Models.PageTypes.Footer
+@{
+    var children = ViewBag.Children as List<Tradebox.Models.ViewModels.ComponentTreeNode>;
+
+    var routeItemsFolder = children?.FirstOrDefault(c =>
+        c.Component.ClassName == "CMS.Folder"
+        && c.Component.DocumentName.Equals("RouteItems", StringComparison.OrdinalIgnoreCase));
+
+    var socialMediaItemsFolder = children?.FirstOrDefault(c =>
+        c.Component.ClassName == "CMS.Folder"
+        && c.Component.DocumentName.Equals("SocialMediaItems", StringComparison.OrdinalIgnoreCase));
+
+    var routeItems = routeItemsFolder?.Children ?? new List<Tradebox.Models.ViewModels.ComponentTreeNode>();
+    var socialMediaItems = socialMediaItemsFolder?.Children ?? new List<Tradebox.Models.ViewModels.ComponentTreeNode>();
+}
+
+<footer class="site-footer @Model.CssClass">
+    <div class="container">
+
+        @if (routeItems.Any())
+        {
+            <nav class="footer-routes">
+                @foreach (var node in routeItems)
+                {
+                    var route = (Tradebox.Models.PageTypes.RouteItem)node.Component;
+                    <a href="@route.Url" class="route-item @route.CssClass">@route.Title</a>
+                }
+            </nav>
+        }
+
+        @if (socialMediaItems.Any())
+        {
+            <div class="footer-social-media">
+                @foreach (var node in socialMediaItems)
+                {
+                    var social = (Tradebox.Models.PageTypes.SocialMediaItem)node.Component;
+                    <a href="@social.Url" class="social-media-item @social.CssClass" target="_blank" rel="noopener noreferrer">
+                        @if (!string.IsNullOrWhiteSpace(social.IconUrl))
+                        {
+                            <img src="@social.IconUrl" alt="@social.Title" class="social-icon" loading="lazy" />
+                        }
+                        else if (!string.IsNullOrWhiteSpace(social.IconCssClass))
+                        {
+                            <i class="@social.IconCssClass"></i>
+                        }
+                        <span>@social.Title</span>
+                    </a>
+                }
+            </div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Model.Content))
+        {
+            <div class="footer-content">
+                @Html.Raw(Model.Content)
+            </div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Model.CopyrightText))
+        {
+            <p class="copyright">@Model.CopyrightText</p>
+        }
+
+    </div>
+</footer>

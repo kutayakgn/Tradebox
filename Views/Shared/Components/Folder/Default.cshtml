@@ -1,0 +1,9 @@
+@model Tradebox.Models.ViewModels.ComponentTreeNode
+
+@if (Model.HasChildren)
+{
+    @foreach (var child in Model.Children)
+    {
+        @await Html.PartialAsync("_ComponentTreeNode", child)
+    }
+}

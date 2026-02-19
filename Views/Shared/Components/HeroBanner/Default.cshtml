@@ -1,0 +1,25 @@
+@model Tradebox.Models.PageTypes.HeroBanner
+@{
+    var children = ViewBag.Children as List<Tradebox.Models.ViewModels.ComponentTreeNode>;
+}
+
+<div class="hero-banner" style="background-image: url('@Model.BackgroundImageUrl');">
+    <div class="hero-content container">
+        <h1>@Model.Title</h1>
+        <p>@Model.Description</p>
+        @if (!string.IsNullOrWhiteSpace(Model.ButtonText))
+        {
+            <a href="@Model.ButtonUrl" class="btn btn-primary">@Model.ButtonText</a>
+        }
+    </div>
+
+    @if (children != null && children.Any())
+    {
+        <div class="hero-banner-children">
+            @foreach (var child in children)
+            {
+                @await Html.PartialAsync("_ComponentTreeNode", child)
+            }
+        </div>
+    }
+</div>

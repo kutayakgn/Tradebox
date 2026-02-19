@@ -1,0 +1,24 @@
+@model Tradebox.Models.ViewModels.DynamicPageViewModel
+
+@{
+    ViewData["Title"] = Model.Meta.Title;
+    ViewData["MetaDescription"] = Model.Meta.Description;
+}
+
+<div class="dynamic-page" data-page-id="@Model.Page.NodeID">
+
+    @if (Model.ComponentTree.Any())
+    {
+        @foreach (var node in Model.ComponentTree)
+        {
+            @await Html.PartialAsync("_ComponentTreeNode", node)
+        }
+    }
+    else
+    {
+        <div class="no-components">
+            <p>Bu sayfa icin henuz icerik eklenmemistir.</p>
+        </div>
+    }
+
+</div>

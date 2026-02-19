@@ -1,0 +1,26 @@
+@model Tradebox.Models.PageTypes.TextBlock
+@{
+    var children = ViewBag.Children as List<Tradebox.Models.ViewModels.ComponentTreeNode>;
+}
+
+<div class="text-block @Model.CssClass">
+    <div class="container">
+        @if (!string.IsNullOrWhiteSpace(Model.Heading))
+        {
+            <h2>@Model.Heading</h2>
+        }
+        <div class="text-content">
+            @Html.Raw(Model.Content)
+        </div>
+    </div>
+
+    @if (children != null && children.Any())
+    {
+        <div class="text-block-children">
+            @foreach (var child in children)
+            {
+                @await Html.PartialAsync("_ComponentTreeNode", child)
+            }
+        </div>
+    }
+</div>

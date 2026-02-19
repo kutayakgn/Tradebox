@@ -1,0 +1,10 @@
+@model Tradebox.Models.ViewModels.ComponentTreeNode
+
+<section class="component-section component-@(Model.ViewComponentName.ToLower()) depth-@Model.Depth"
+         data-component="@Model.ViewComponentName"
+         data-node-id="@Model.Component.NodeID"
+         data-depth="@Model.Depth">
+
+    @await Component.InvokeAsync(Model.ViewComponentName, new { node = Model })
+
+</section>
