@@ -7,6 +7,8 @@
 
 <div class="dynamic-page" data-page-id="@Model.Page.NodeID">
 
+    @await Component.InvokeAsync("Breadcrumb", new { nodeAliasPath = Model.Page.NodeAliasPath })
+
     @if (Model.ComponentTree.Any())
     {
         @foreach (var node in Model.ComponentTree)

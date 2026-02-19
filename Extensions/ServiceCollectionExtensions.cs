@@ -20,6 +20,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<ICommonsService, CommonsService>();
         services.AddScoped<IComponentResolverService, ComponentResolverService>();
         services.AddSingleton<IRedirectService, RedirectService>();
+        services.AddScoped<IBreadcrumbService, BreadcrumbService>();
 
         return services;
     }
