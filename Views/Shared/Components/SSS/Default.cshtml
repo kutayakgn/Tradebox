@@ -1,0 +1,117 @@
+@model Tradebox.Models.ViewModels.SSSViewModel
+
+@{
+    // Mevcut URL'yi pagination/filtre linkleri için al
+    var currentPath = Context.Request.Path.ToString();
+}
+
+<div class="sss-component">
+
+    @* ======================== FILTRE ALANI ======================== *@
+    @if (Model.IsFilterEnabled)
+    {
+        <form method="get" action="@currentPath" class="sss-filter">
+            <div class="sss-filter__fields">
+
+                <div class="sss-filter__field">
+                    <select name="sssCategory" class="sss-filter__select">
+                        <option value="">Kategori Secin</option>
+                        @foreach (var cat in Model.Categories)
+                        {
+                            <option value="@cat.CategoryId"
+                                    selected="@(Model.SelectedCategoryId == cat.CategoryId)">
+                                @cat.CategoryName
+                            </option>
+                        }
+                    </select>
+                </div>
+
+                <div class="sss-filter__field">
+                    <input type="text"
+                           name="sssKeyword"
+                           value="@Model.Keyword"
+                           placeholder="Anahtar kelime arayin"
+                           class="sss-filter__input" />
+                </div>
+
+                <div class="sss-filter__field">
+                    <button type="submit" class="sss-filter__button">Filtrele</button>
+                </div>
+            </div>
+        </form>
+    }
+
+    @* ======================== SORULAR ======================== *@
+    @if (Model.Items.Any())
+    {
+        <div class="sss-list">
+            @foreach (var item in Model.Items)
+            {
+                <div class="sss-item">
+                    <details class="sss-item__details">
+                        <summary class="sss-item__question">
+                            <span>@item.Question</span>
+                            @if (!string.IsNullOrWhiteSpace(item.CategoryName))
+                            {
+                                <span class="sss-item__category">@item.CategoryName</span>
+                            }
+                        </summary>
+                        <div class="sss-item__answer">
+                            @Html.Raw(item.Answer)
+                        </div>
+                    </details>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="sss-empty">
+            <p>Sonuc bulunamadi.</p>
+        </div>
+    }
+
+    @* ======================== PAGINATION ======================== *@
+    @if (Model.TotalPages > 1)
+    {
+        <nav class="sss-pagination" aria-label="SSS sayfalama">
+            <ul class="sss-pagination__list">
+                @for (var i = 1; i <= Model.TotalPages; i++)
+                {
+                    var isActive = i == Model.CurrentPage;
+                    var href = BuildPageUrl(currentPath, i, Model.SelectedCategoryId, Model.Keyword);
+
+                    <li class="sss-pagination__item @(isActive ? "sss-pagination__item--active" : "")">
+                        @if (isActive)
+                        {
+                            <span class="sss-pagination__link sss-pagination__link--current">@i</span>
+                        }
+                        else
+                        {
+                            <a href="@href" class="sss-pagination__link">@i</a>
+                        }
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+
+</div>
+
+@functions {
+    string BuildPageUrl(string path, int page, int? categoryId, string? keyword)
+    {
+        var queryParams = new List<string>();
+
+        if (page > 1)
+            queryParams.Add($"sssPage={page}");
+
+        if (categoryId.HasValue && categoryId.Value > 0)
+            queryParams.Add($"sssCategory={categoryId.Value}");
+
+        if (!string.IsNullOrWhiteSpace(keyword))
+            queryParams.Add($"sssKeyword={Uri.EscapeDataString(keyword)}");
+
+        return queryParams.Any() ? $"{path}?{string.Join("&", queryParams)}" : path;
+    }
+}

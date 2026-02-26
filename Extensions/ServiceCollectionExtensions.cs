@@ -13,6 +13,7 @@ public static class ServiceCollectionExtensions
         // Repositories
         services.AddScoped<IPageRepository, PageRepository>();
         services.AddScoped<IComponentRepository, ComponentRepository>();
+        services.AddScoped<ISSSRepository, SSSRepository>();
 
         // Services
         services.AddScoped<IComponentTreeBuilder, ComponentTreeBuilder>();
