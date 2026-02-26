@@ -44,6 +44,16 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+// ──────────────────────────────────────────────
+// Localization: URL → Cookie → varsayılan (tr-TR)
+// ──────────────────────────────────────────────
+var supportedCultures = new[] { "tr-TR", "en-US" };
+app.UseRequestLocalization(new RequestLocalizationOptions()
+    .SetDefaultCulture("tr-TR")
+    .AddSupportedCultures(supportedCultures)
+    .AddSupportedUICultures(supportedCultures)
+    .AddInitialRequestCultureProvider(new Tradebox.Services.UrlCultureProvider()));
+
 // 301 Redirect (Custom Table'dan, gunluk cache)
 app.UseMiddleware<RedirectMiddleware>();
 
