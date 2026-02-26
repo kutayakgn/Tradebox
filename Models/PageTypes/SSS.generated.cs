@@ -18,5 +18,15 @@ namespace Tradebox.Models.PageTypes
             get => GetBooleanValue("IsFilterEnabled", true);
             set => SetValue("IsFilterEnabled", value);
         }
+
+        /// <summary>
+        /// CMS panelden sabit kategori secimi.
+        /// 0 veya bos ise tum kategoriler gelir, dolu ise yalnizca o kategori.
+        /// </summary>
+        public int ChosenCategory
+        {
+            get => GetIntegerValue("ChosenCategory", 0);
+            set => SetValue("ChosenCategory", value);
+        }
     }
 }

@@ -6,6 +6,11 @@ public class SSSViewModel
     public int PageSize { get; set; } = 10;
     public bool IsFilterEnabled { get; set; } = true;
 
+    /// <summary>
+    /// CMS panelden sabit kategori. 0 ise tum kategoriler, >0 ise sadece o kategori.
+    /// </summary>
+    public int ChosenCategory { get; set; }
+
     // Veri
     public List<SSSItemViewModel> Items { get; set; } = new();
     public List<SSSCategoryViewModel> Categories { get; set; } = new();

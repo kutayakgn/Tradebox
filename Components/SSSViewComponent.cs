@@ -26,12 +26,19 @@ public class SSSViewComponent : ViewComponent
         int.TryParse(request.Query["sssCategory"], out var categoryId);
         var keyword = request.Query["sssKeyword"].ToString();
 
+        // CMS panelden sabit kategori secilmisse onu baz al,
+        // secilmemisse kullanicinin filtre secimini kullan
+        var chosenCategory = model.ChosenCategory;
+        int? effectiveCategory = chosenCategory > 0
+            ? chosenCategory
+            : (categoryId > 0 ? categoryId : null);
+
         // Kategorileri çek
         var categories = _sssRepository.GetCategories();
 
         // Soruları filtreli + pagination ile çek
         var (items, totalCount) = _sssRepository.GetItems(
-            categoryId > 0 ? categoryId : null,
+            effectiveCategory,
             string.IsNullOrWhiteSpace(keyword) ? null : keyword,
             currentPage,
             model.PageSize);
@@ -40,11 +47,12 @@ public class SSSViewComponent : ViewComponent
         {
             PageSize = model.PageSize,
             IsFilterEnabled = model.IsFilterEnabled,
+            ChosenCategory = chosenCategory,
             Items = items,
             Categories = categories,
             CurrentPage = currentPage,
             TotalItems = totalCount,
-            SelectedCategoryId = categoryId > 0 ? categoryId : null,
+            SelectedCategoryId = effectiveCategory,
             Keyword = string.IsNullOrWhiteSpace(keyword) ? null : keyword
         };
 

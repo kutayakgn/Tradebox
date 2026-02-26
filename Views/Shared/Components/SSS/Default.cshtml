@@ -13,18 +13,21 @@
         <form method="get" action="@currentPath" class="sss-filter">
             <div class="sss-filter__fields">
 
-                <div class="sss-filter__field">
-                    <select name="sssCategory" class="sss-filter__select">
-                        <option value="">Kategori Secin</option>
-                        @foreach (var cat in Model.Categories)
-                        {
-                            <option value="@cat.CategoryId"
-                                    selected="@(Model.SelectedCategoryId == cat.CategoryId)">
-                                @cat.CategoryName
-                            </option>
-                        }
-                    </select>
-                </div>
+                @if (Model.ChosenCategory <= 0)
+                {
+                    <div class="sss-filter__field">
+                        <select name="sssCategory" class="sss-filter__select">
+                            <option value="">Kategori Secin</option>
+                            @foreach (var cat in Model.Categories)
+                            {
+                                <option value="@cat.CategoryId"
+                                        selected="@(Model.SelectedCategoryId == cat.CategoryId)">
+                                    @cat.CategoryName
+                                </option>
+                            }
+                        </select>
+                    </div>
+                }
 
                 <div class="sss-filter__field">
                     <input type="text"
